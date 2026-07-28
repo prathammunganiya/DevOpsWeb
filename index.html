@@ -1,453 +1,283 @@
-<h1> Pratham Munganiya </h1>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>psk — profile</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --bg: #0f1720;
-    --panel: #141e29;
-    --panel-2: #182230;
-    --line: #263646;
-    --text: #e7edf3;
-    --muted: #8ca0b3;
-    --teal: #4fd1c5;
-    --amber: #f2b155;
-    --red: #ff6b6b;
-  }
-  *{ box-sizing: border-box; }
-  html{ scroll-behavior: smooth; }
-  body{
-    margin:0;
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
-  .mono{ font-family: 'JetBrains Mono', monospace; }
+/* ===============================
+   ANIMATIONS
+=================================*/
 
-  /* ---- Fake editor chrome ---- */
-  .titlebar{
-    display:flex; align-items:center; gap:8px;
-    padding: 10px 16px;
-    background: #0b1119;
-    border-bottom: 1px solid var(--line);
-  }
-  .dot{ width:11px; height:11px; border-radius:50%; }
-  .dot.r{ background:#ff5f56; }
-  .dot.y{ background:#ffbd2e; }
-  .dot.g{ background:#27c93f; }
-  .titlebar span{
-    margin-left: 14px;
-    color: var(--muted);
-    font-size: 12.5px;
-    letter-spacing: .02em;
-  }
-
-  .tabs{
-    display:flex;
-    overflow-x:auto;
-    background: var(--bg);
-    border-bottom: 1px solid var(--line);
-  }
-  .tab{
-    padding: 10px 18px;
-    font-size: 13px;
-    color: var(--muted);
-    cursor:pointer;
-    white-space:nowrap;
-    border-right: 1px solid var(--line);
-    background: transparent;
-    position:relative;
-    transition: color .15s ease, background .15s ease;
-  }
-  .tab .dirty{ color: var(--amber); margin-left:6px; }
-  .tab:hover{ color: var(--text); background: rgba(255,255,255,0.02); }
-  .tab.active{
-    color: var(--text);
-    background: var(--panel);
-  }
-  .tab.active::after{
+/* Animated Background */
+body::before{
     content:"";
-    position:absolute; left:0; right:0; bottom:-1px;
-    height:2px; background: var(--teal);
-  }
+    position:fixed;
+    inset:0;
+    z-index:-1;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(79,209,197,.08), transparent 35%),
+        radial-gradient(circle at 80% 80%, rgba(242,177,85,.08), transparent 35%);
+    animation:bgMove 12s ease-in-out infinite alternate;
+}
 
-  .body-wrap{ max-width: 880px; margin: 0 auto; padding: 0 20px; }
+@keyframes bgMove{
+    from{
+        transform:translate(0,0);
+    }
+    to{
+        transform:translate(40px,-40px);
+    }
+}
 
-  .file{ display:none; padding: 42px 4px 70px; }
-  .file.active{ display:block; animation: fade .35s ease; }
-  @keyframes fade{ from{ opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;} }
+/* Typing Animation */
+.hero h1{
+    overflow:hidden;
+    white-space:nowrap;
+    border-right:3px solid var(--teal);
+    width:0;
+    animation:
+        typing 2.8s steps(22,end) forwards,
+        blink .8s infinite;
+}
 
-  .line-no{
-    color: #33465a;
-    font-size: 12px;
-    display:inline-block;
-    width: 28px;
-    user-select:none;
-  }
+@keyframes typing{
+    from{
+        width:0;
+    }
+    to{
+        width:100%;
+    }
+}
 
-  /* ---- profile.md ---- */
-  .hero h1{
-    font-family:'JetBrains Mono', monospace;
-    font-size: 38px;
-    margin: 0 0 6px;
-    font-weight: 700;
-  }
-  .hero h1 .hash{ color: var(--teal); }
-  .hero .role{
-    color: var(--amber);
-    font-size: 15.5px;
-    margin: 0 0 22px;
-  }
-  .hero p{
-    color: var(--muted);
-    line-height: 1.7;
-    font-size: 15px;
-    max-width: 620px;
-  }
-  .badges{ display:flex; flex-wrap:wrap; gap:8px; margin-top: 22px; }
-  .badge{
-    font-family:'JetBrains Mono', monospace;
-    font-size: 12px;
-    padding: 5px 10px;
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    color: var(--teal);
-    background: rgba(79,209,197,0.06);
-  }
-  .links{ margin-top: 26px; display:flex; gap:14px; }
-  .links a{
-    color: var(--text);
-    text-decoration:none;
-    font-size: 13.5px;
-    border: 1px solid var(--line);
-    padding: 8px 14px;
-    border-radius: 6px;
-    font-family:'JetBrains Mono', monospace;
-    transition: border-color .15s ease, color .15s ease;
-  }
-  .links a:hover{ border-color: var(--teal); color: var(--teal); }
+@keyframes blink{
+    50%{
+        border-color:transparent;
+    }
+}
 
-  h2.section-title{
-    font-family:'JetBrains Mono', monospace;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: .12em;
-    color: var(--muted);
-    margin: 0 0 20px;
-    display:flex; align-items:center; gap:10px;
-  }
-  h2.section-title::before{ content:"//"; color: var(--teal); }
+/* Hero Fade */
+.hero{
+    opacity:0;
+    transform:translateY(40px);
+    animation:fadeUp 1s forwards;
+}
 
-  /* ---- internship.log (commit style) ---- */
-  .commit{
-    display:flex; gap:16px;
-    padding: 16px 0;
-    border-bottom: 1px dashed var(--line);
-  }
-  .commit:last-child{ border-bottom:none; }
-  .commit .hashcol{
-    color: var(--teal);
-    font-family:'JetBrains Mono', monospace;
-    font-size: 12.5px;
-    min-width: 74px;
-    padding-top: 2px;
-  }
-  .commit .msg{ font-size: 14.5px; line-height:1.6; }
-  .commit .msg b{ color: var(--text); }
-  .commit .msg span.tag{
-    font-family:'JetBrains Mono', monospace;
-    font-size: 10.5px;
-    color: var(--amber);
-    border: 1px solid rgba(242,177,85,.3);
-    padding: 1px 6px;
-    border-radius: 3px;
-    margin-left: 8px;
-    vertical-align: 1px;
-  }
-  .commit .meta{ color: var(--muted); font-size: 12.5px; margin-top:4px; }
+@keyframes fadeUp{
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
 
-  .supervisor{
-    margin-top: 24px;
-    font-size: 13.5px;
-    color: var(--muted);
-    font-family: 'JetBrains Mono', monospace;
-  }
-  .supervisor b{ color: var(--text); }
+/* Badges */
+.badge{
+    transition:.3s;
+}
 
-  /* ---- dsa.notes (index cards) ---- */
-  .cardgrid{
-    display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-    gap: 14px;
-  }
-  .card{
-    border: 1px solid var(--line);
-    background: var(--panel-2);
-    border-radius: 8px;
-    padding: 16px;
-    position: relative;
-  }
-  .card::before{
-    content: attr(data-tag);
-    position:absolute; top:-9px; left:14px;
-    background: var(--bg);
-    padding: 0 6px;
-    font-family:'JetBrains Mono', monospace;
-    font-size: 10.5px;
-    color: var(--teal);
-  }
-  .card h3{ margin: 6px 0 8px; font-size: 15px; }
-  .card p{ margin:0; color: var(--muted); font-size: 13px; line-height:1.6; }
+.badge:hover{
+    transform:translateY(-5px) scale(1.08);
+    background:rgba(79,209,197,.18);
+    box-shadow:0 0 20px rgba(79,209,197,.25);
+}
 
-  /* ---- projects.dir ---- */
-  .proj{
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 18px 20px;
-    margin-bottom: 14px;
-    background: var(--panel-2);
-  }
-  .proj h3{
-    margin:0 0 6px;
-    font-size: 15.5px;
-    font-family:'JetBrains Mono', monospace;
-  }
-  .proj h3 .path{ color: var(--muted); font-weight:400; font-size: 13px;}
-  .proj p{ margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.6; }
-  .stack{ margin-top:10px; display:flex; flex-wrap:wrap; gap:6px; }
-  .stack span{
-    font-size: 11px;
-    font-family:'JetBrains Mono', monospace;
-    color: var(--amber);
-    background: rgba(242,177,85,0.08);
-    padding: 3px 8px;
-    border-radius: 4px;
-  }
+/* Buttons */
+.links a{
+    position:relative;
+    overflow:hidden;
+    transition:.3s;
+}
 
-  /* ---- vocab.dict ---- */
-  .entry{ padding: 16px 0; border-bottom: 1px solid var(--line); }
-  .entry:last-child{ border:none; }
-  .entry .word{
-    font-family:'JetBrains Mono', monospace;
-    font-size: 17px;
-    color: var(--teal);
-  }
-  .entry .pos{ color: var(--muted); font-size:12px; margin-left:8px; font-style: italic;}
-  .entry .def{ font-size: 14px; margin: 6px 0 4px; }
-  .entry .use{ font-size: 12.5px; color: var(--muted); }
-  .entry .use b{ color: var(--amber); font-weight:600; }
+.links a::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-100%;
+    width:100%;
+    height:100%;
+    background:linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.25),
+        transparent
+    );
+}
 
-  footer{
-    text-align:center;
-    padding: 24px;
-    color: var(--muted);
-    font-size: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    border-top: 1px solid var(--line);
-  }
+.links a:hover::before{
+    animation:shine .8s forwards;
+}
 
-  @media (max-width: 560px){
-    .hero h1{ font-size: 28px; }
-    .commit{ flex-direction:column; gap:4px; }
-    .commit .hashcol{ min-width:auto; }
-  }
+.links a:hover{
+    transform:translateY(-4px);
+}
 
-  /* keyboard focus visibility */
-  a:focus-visible, .tab:focus-visible{
-    outline: 2px solid var(--teal);
-    outline-offset: 2px;
-  }
-  @media (prefers-reduced-motion: reduce){
-    .file.active{ animation:none; }
-    html{ scroll-behavior:auto; }
-  }
-</style>
-</head>
-<body>
+@keyframes shine{
+    to{
+        left:120%;
+    }
+}
 
-  <div class="titlebar">
-    <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
-    <span>psk — Visual Studio Code</span>
-  </div>
+/* Cards */
+.card{
+    transition:.35s;
+}
 
-  <div class="tabs" id="tabs">
-    <div class="tab active" data-file="profile">profile.md</div>
-    <div class="tab" data-file="internship">internship.log</div>
-    <div class="tab" data-file="dsa">dsa.notes</div>
-    <div class="tab" data-file="projects">projects.dir</div>
-    <div class="tab" data-file="vocab">vocab.dict<span class="dirty">●</span></div>
-  </div>
+.card:hover{
+    transform:translateY(-10px) scale(1.03);
+    border-color:var(--teal);
+    box-shadow:0 15px 35px rgba(0,0,0,.35);
+}
 
-  <div class="body-wrap">
+/* Projects */
+.proj{
+    transition:.35s;
+}
 
-    <!-- profile.md -->
-    <section class="file active" id="profile">
-      <div class="hero">
-        <h1><span class="hash">#</span> Pratham (psk)</h1>
-        <p class="role">B.Tech CSE @ Arya College of Engineering &amp; I.T. (ACEIT), Jaipur</p>
-        <p>
-          Software engineer and developer with a core in C++, currently building out
-          Python backend and data-engineering skills. Splits time between AI/ML
-          internship work, structured DSA revision, and shipping small full-stack
-          and CLI projects on the side.
-        </p>
-        <div class="badges">
-          <span class="badge">C++</span>
-          <span class="badge">Python</span>
-          <span class="badge">Data Structures</span>
-          <span class="badge">Backend</span>
-          <span class="badge">AI / ML</span>
-        </div>
-        <div class="links">
-          <a href="https://github.com/prathammunganiya" target="_blank" rel="noopener">github.com/prathammunganiya</a>
-        </div>
-      </div>
-    </section>
+.proj:hover{
+    transform:translateY(-8px);
+    border-color:var(--teal);
+    box-shadow:0 0 30px rgba(79,209,197,.18);
+}
 
-    <!-- internship.log -->
-    <section class="file" id="internship">
-      <h2 class="section-title">CodeTrade.io — DecodeLabs Batch 2026</h2>
-      <p style="color:var(--muted); font-size:13.5px; margin-top:-8px;">45-day AI/ML industrial training internship, run across multiple curriculum phases.</p>
+/* Vocabulary Entries */
+.entry{
+    transition:.35s;
+}
 
-      <div style="margin-top:18px;">
-        <div class="commit">
-          <div class="hashcol">phase 0</div>
-          <div class="msg"><b>Foundations</b><span class="tag">CLI + DSA</span>
-            <div class="meta">Early CLI project construction and DSA concept surveys.</div>
-          </div>
-        </div>
-        <div class="commit">
-          <div class="hashcol">phase 1</div>
-          <div class="msg"><b>Linear Regression practical</b><span class="tag">sklearn</span>
-            <div class="meta">California Housing dataset — baseline model, feature comparison, split testing, manual metric verification. Pushed for evaluation.</div>
-          </div>
-        </div>
-        <div class="commit">
-          <div class="hashcol">phase 1</div>
-          <div class="msg"><b>E-Commerce Sales Performance Analysis</b><span class="tag">mini project</span>
-            <div class="meta">Olist dataset in Jupyter; recurring file-path issues resolved via os.chdir().</div>
-          </div>
-        </div>
-        <div class="commit">
-          <div class="hashcol">phase 2</div>
-          <div class="msg"><b>LLM Fundamentals toolkit</b><span class="tag">multi-LLM</span>
-            <div class="meta">Four Python tools — multi-LLM comparison, prompt playground, streaming chat, token tracker — with persistent API integration work.</div>
-          </div>
-        </div>
-        <div class="commit">
-          <div class="hashcol">phase 2</div>
-          <div class="msg"><b>Order Delay Intelligence</b><span class="tag">XGBoost</span>
-            <div class="meta">ML pipeline on the Brazilian Olist dataset — XGBoost, SHAP explanations, GridSearchCV.</div>
-          </div>
-        </div>
-        <div class="commit">
-          <div class="hashcol">phase 3</div>
-          <div class="msg"><b>RAG pipeline — AuraHealth Nexus</b><span class="tag">FAISS</span>
-            <div class="meta">FAISS vector search, sentence-transformers embeddings, conversational memory, multi-provider LLM support (Groq, Gemini, OpenRouter). Included Git history recovery and API key rotation.</div>
-          </div>
-        </div>
-        <div class="commit">
-          <div class="hashcol">phase 3</div>
-          <div class="msg"><b>Voice Activity Detector</b><span class="tag">offline</span>
-            <div class="meta">Python VAD pipeline using scikit-learn and librosa, running fully offline.</div>
-          </div>
-        </div>
-        <div class="commit">
-          <div class="hashcol">final</div>
-          <div class="msg"><b>Industrial training report</b><span class="tag">45 pages</span>
-            <div class="meta">Multi-stage document assembly, RTU formatting, page numbering — completed end to end.</div>
-          </div>
-        </div>
-      </div>
+.entry:hover{
+    padding-left:10px;
+}
 
-      <div class="supervisor">supervised_by: <b>Mr. Vikram</b></div>
-    </section>
+/* Tabs */
+.tab{
+    transition:.3s;
+}
 
-    <!-- dsa.notes -->
-    <section class="file" id="dsa">
-      <h2 class="section-title">DSA Revision</h2>
-      <p style="color:var(--muted); font-size:13.5px; margin-top:-8px; margin-bottom:20px;">
-        One structured note per topic, reinforced with spaced repetition.
-      </p>
-      <div class="cardgrid">
-        <div class="card" data-tag="note"><h3>Arrays &amp; Strings</h3><p>Single-page summary, revisited on a spaced schedule.</p></div>
-        <div class="card" data-tag="note"><h3>Trees &amp; Graphs</h3><p>Core traversal and structure patterns, one page per topic.</p></div>
-        <div class="card" data-tag="note"><h3>Dynamic Programming</h3><p>Pattern-first notes, reviewed on repeat intervals.</p></div>
-        <div class="card" data-tag="note"><h3>Sorting &amp; Searching</h3><p>Condensed reference format for quick recall.</p></div>
-      </div>
-    </section>
+.tab:hover{
+    transform:translateY(-2px);
+}
 
-    <!-- projects.dir -->
-    <section class="file" id="projects">
-      <h2 class="section-title">Recent Work</h2>
-      <div class="proj">
-        <h3>Talkat!ve <span class="path">/ full-stack chatbot</span></h3>
-        <p>React + Node.js chatbot wired to OpenAI, with Gemini, Groq, and OpenRouter as free-tier alternatives.</p>
-        <div class="stack"><span>React</span><span>Node.js</span><span>OpenAI</span></div>
-      </div>
-      <div class="proj">
-        <h3>CLI toolbox <span class="path">/ three utilities</span></h3>
-        <p>To-Do List, Expense Tracker, and Password Generator — built with Python standard library only.</p>
-        <div class="stack"><span>Python</span><span>stdlib</span></div>
-      </div>
-      <div class="proj">
-        <h3>Resume &amp; LinkedIn banner <span class="path">/ personal branding</span></h3>
-        <p>Resume rebuilt in ReportLab across several passes for layout precision and one-page fit; LinkedIn banner iterated with aurora-style color, trait tags, and a torso-crop photo.</p>
-        <div class="stack"><span>ReportLab</span><span>design</span></div>
-      </div>
-      <div class="proj">
-        <h3>Semester exam prep <span class="path">/ B.Tech IV</span></h3>
-        <p>DCCN, DBMS, Theory of Computation, Microprocessors &amp; Interfaces, and Discrete Mathematics — past papers, topic-frequency analysis, and viva prep.</p>
-        <div class="stack"><span>DCCN</span><span>DBMS</span><span>TOC</span><span>Discrete Math</span></div>
-      </div>
-    </section>
+/* VS Code Dots */
+.dot{
+    animation:pulse 2s infinite;
+}
 
-    <!-- vocab.dict -->
-    <section class="file" id="vocab">
-      <h2 class="section-title">Vocabulary Corner</h2>
-      <div class="entry">
-        <span class="word">meticulous</span><span class="pos">adjective</span>
-        <p class="def">Showing great attention to detail; very careful and precise.</p>
-        <p class="use"><b>Use it:</b> describing your DSA note-taking or debugging a stubborn OneDrive sync issue — "I was meticulous about tracing the file-lock error."</p>
-      </div>
-      <div class="entry">
-        <span class="word">iterative</span><span class="pos">adjective</span>
-        <p class="def">Involving repetition, with each cycle building on and refining the last.</p>
-        <p class="use"><b>Use it:</b> in a standup or report — "The resume went through an iterative redesign before it was one page."</p>
-      </div>
-      <div class="entry">
-        <span class="word">bottleneck</span><span class="pos">noun</span>
-        <p class="def">A point in a process that slows down the whole system.</p>
-        <p class="use"><b>Use it:</b> in a technical discussion — "OneDrive syncing was the real bottleneck in our Git workflow."</p>
-      </div>
-    </section>
+.dot:nth-child(2){
+    animation-delay:.3s;
+}
 
-  </div>
+.dot:nth-child(3){
+    animation-delay:.6s;
+}
 
-  <footer>~/psk/profile.html · last synced today</footer>
+@keyframes pulse{
+    0%,100%{
+        transform:scale(1);
+    }
+    50%{
+        transform:scale(1.25);
+    }
+}
 
-<script>
-  const tabs = document.querySelectorAll('.tab');
-  const files = document.querySelectorAll('.file');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      tabs.forEach(t => t.classList.remove('active'));
-      files.forEach(f => f.classList.remove('active'));
-      tab.classList.add('active');
-      document.getElementById(tab.dataset.file).classList.add('active');
-    });
-    tab.setAttribute('tabindex', '0');
-    tab.addEventListener('keydown', e => {
-      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); tab.click(); }
-    });
-  });
-</script>
+/* Section Animation */
+.file.active{
+    display:block;
+    animation:fileOpen .5s ease;
+}
 
-</body>
-</html>
+@keyframes fileOpen{
+    from{
+        opacity:0;
+        transform:translateY(25px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* Floating Effect */
+.body-wrap{
+    animation:floatWindow 6s ease-in-out infinite;
+}
+
+@keyframes floatWindow{
+    0%,100%{
+        transform:translateY(0);
+    }
+    50%{
+        transform:translateY(-6px);
+    }
+}
+
+/* Commits */
+.commit{
+    transition:.35s;
+}
+
+.commit:hover{
+    padding-left:12px;
+    border-left:3px solid var(--teal);
+}
+
+/* Cards Fade */
+.card,
+.proj,
+.commit,
+.entry{
+    opacity:0;
+    transform:translateY(30px);
+    animation:fadeCards .8s forwards;
+}
+
+.card:nth-child(1),
+.commit:nth-child(1),
+.proj:nth-child(1),
+.entry:nth-child(1){
+    animation-delay:.1s;
+}
+
+.card:nth-child(2),
+.commit:nth-child(2),
+.proj:nth-child(2),
+.entry:nth-child(2){
+    animation-delay:.2s;
+}
+
+.card:nth-child(3),
+.commit:nth-child(3),
+.proj:nth-child(3),
+.entry:nth-child(3){
+    animation-delay:.3s;
+}
+
+.card:nth-child(4),
+.commit:nth-child(4),
+.proj:nth-child(4){
+    animation-delay:.4s;
+}
+
+@keyframes fadeCards{
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* Footer */
+footer{
+    animation:footerGlow 4s infinite;
+}
+
+@keyframes footerGlow{
+    0%,100%{
+        color:var(--muted);
+    }
+    50%{
+        color:var(--teal);
+    }
+}
+
+/* Smooth Scrolling */
+html{
+    scroll-behavior:smooth;
+}
+
+/* Selection Color */
+::selection{
+    background:rgba(79,209,197,.4);
+    color:white;
+}
